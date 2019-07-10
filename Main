@@ -1,0 +1,72 @@
+# -*- coding: utf-8 -*-
+"""
+Created on Tue Jul  9 19:26:41 2019
+
+@author: 59577
+"""
+
+import gzip
+import os
+import datetime
+
+#定义函数用来提取压缩文件中的数据，结果可直接写入csv文件
+def gz2csv(date,mode):
+    file_name = "H:/个人事务/美琳/Code/cmx/"+date+"/metric-daily_stats-cmx_futures-cmx_futures-"+date+".csv.gz"
+    file = gzip.open(file_name,mode='rt')
+    file_content = file.read()
+    #0状态下不删除表头
+    if mode == 0:
+       data = file_content
+    #1状态下删除表头
+    if mode == 1:
+        data = file_content[152:]
+    return data
+
+#定义函数用来删除csv文件中的空行，将删除表头后内容写入新文件
+def clearBlankLine():
+    file1 = open('new_file.csv', 'r') # 要去掉空行的文件 
+    file2 = open('data.csv', 'w') # 生成没有空行的文件
+    try:
+        for line in file1.readlines():
+            if line == '\n':
+                line = line.strip("\n")
+            file2.write(line)
+    finally:
+        file1.close()
+        file2.close()
+
+#删除旧文件
+csv_file = 'new_file.csv'
+os.remove(csv_file)
+#创建新文件
+csv_file = open('new_file.csv','a+')
+
+#写入表头
+date = '2017-01-01'
+data = gz2csv(date,0)
+csv_file.write(data)
+
+#写入第一段
+begin1 = datetime.date(2017,1,2)
+end1 = datetime.date(2019,3,2)
+for i in range((end1 - begin1).days+1):
+    date = begin1 + datetime.timedelta(days=i)
+    date = date.strftime("%Y-%m-%d")
+    data = gz2csv(date,1)
+    csv_file.write(data)
+#写入第二段
+begin2 = datetime.date(2019,4,19)
+end2 = datetime.date(2019,5,4)
+for i in range((end2 - begin2).days+1):
+    date = begin2 + datetime.timedelta(days=i)
+    date = date.strftime("%Y-%m-%d")
+    data = gz2csv(date,1)
+    csv_file.write(data)
+
+#删除文件中空行    
+csv_file.close()
+
+
+
+
+clearBlankLine()
