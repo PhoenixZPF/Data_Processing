@@ -1,0 +1,51 @@
+# -*- coding: utf-8 -*-
+"""
+Created on Mon Jul 15 09:35:29 2019
+
+@author: 59577
+"""
+
+#DataFrame Process
+
+import pandas as pd
+import numpy as np
+import matplotlib.pyplot as plt
+
+#读取df1和df2
+df1 = pd.read_excel('new_file.xls')
+df2=pd.read_excel('new_file 2.xls')
+
+#将df1和df2转化为列表
+df1 = df1.astype(str)
+data1 = np.array(df1)
+data2 = np.array(df2)
+data_list1 = data1.tolist()
+data_list2 = data2.tolist()
+
+#生成新列表volume，长度与df1相等，将df2中的volume值填充到对应位置
+date_length1 = len(data_list1)
+date_length2 = len(data_list2)
+volume = []
+state = 0
+for i in range(date_length1):
+    for j in range(date_length2):
+        if data_list1[i][0] == data_list2[j][0]:
+            state = 1
+            index = j
+    if state == 1:
+        volume.append(data_list2[index][2])
+    else:
+        volume.append(0)
+    state = 0
+
+#生成绘图所需的x和y，x为整数序列，长度与df1相等，y为volume列表
+x = list(range(1,date_length1+1,1))
+y = volume
+
+#绘制散点图和折线图
+fig = plt.figure()
+ax1 = fig.add_subplot(2,1,1)
+ax2 = fig.add_subplot(2,1,2)
+ax1.scatter(x,y,marker = '.')
+ax2.plot(x,y)
+plt.show()
